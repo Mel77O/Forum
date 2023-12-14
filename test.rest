@@ -36,3 +36,36 @@ Content-Type: application/json
 ### Delete an item
 DELETE {{host}}/catusers/5
 Content-Type: application/json
+
+## NABUA
+
+
+### Create Post
+POST {{host}}/post
+Content-Type: application/json
+
+{   
+    "title": "fds",
+    "content": "sadddsa."
+}
+
+### Get Read All Posts for the User
+GET {{host}}/post
+Content-Type: application/json
+
+### Read Single Post by ID
+GET {{host}}/post/2
+Content-Type: application/json
+
+### Update Post
+PUT {{host}}/post/5
+Content-Type: application/json
+
+{
+    "title": "nn Title",
+    "content": "This is nknk lmkj content of the post."
+}
+
+### Delete Post
+DELETE {{host}}/post/1
+Content-Type: application/json

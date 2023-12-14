@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 from categoryCategory import get_all_catusers, get_catuser_by_id, create_catuser, update_catuser, delete_catuser
 from flask_mysqldb import MySQL
@@ -6,6 +7,7 @@ from dotenv import load_dotenv
 from os import getenv
 
 app = Flask(__name__)
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 load_dotenv()
 
@@ -51,3 +53,35 @@ def catusers_by_id(id):
   else:
     result = get_catuser_by_id(id)
   return jsonify(result)
+
+##NABUA
+#to create and read the post
+@app.route("/post", methods=["GET", "POST"])
+def post():
+    if request.method=="POST":
+        data = request.get_json()
+        result = create(data)
+        return jsonify(result)
+    else:
+        result= get_post()
+        return jsonify(result) if result else jsonify({"message": "No posts available"})
+     
+##delete update
+@app.route("/post/<post>", methods=["GET", "PUT", "DELETE"])
+def post_by_post(post):
+
+    if request.method== "PUT":
+        data = request.get_json()
+        result = update(post, data)
+     
+    elif request.method=="DELETE":
+        result = delete(post)
+
+    else:
+        result = get_pos_by_id(post)
+    return jsonify(result)
+        
+
+  
+
+
