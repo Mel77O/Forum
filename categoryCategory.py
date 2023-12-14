@@ -32,52 +32,50 @@ def delete_catuser(id):
 ## NABUA
 # CREATE
 def create(data):
-    if 'tid' in data: 
-        cur = execute("""CALL save_post(%s, %s, %s)""", (data['tid'], data["title"], data["content"]))
-        row = cur.fetchall()
-        
-        if row:
-            data["tid"] = row["tid"]  # Corrected: use row["tid"] instead of row["id"]
-            return data
-        else:
-            # Handle error or return None
-            return None
-    else:
-        # Handle error or return None
-        return None
+  cur = execute("""CALL save_post(%s, %s)""",
+          (data["title"], data["content"]))
+  row = cur.fetchone()
+  data["tid"] = row["tid"]
+  return data
 
     
 # GET ALL
 def get_post():
     rv = fetchall("""SELECT * FROM post_view""")
     return rv
+
 # GET ONE ID
-def get_pos_by_id(id):
-    rv = fetchone("""SELECT * FROM post_view WHERE tid = %s""", (id,))
+def get_post_by_id(tid):
+    rv = fetchone("""SELECT * FROM post_view WHERE tid = %s""", (tid,))
+    if rv is None:
+        return {"error":"id doesn't match to any post"}
     return rv
     
 ## UPDATE
 def update(id, data):
-    if 'tid' in data: 
-        cur = execute("""CALL update_post(%s, %s, %s)""", (data['tid'], data["title"], data["content"]))
-        row = cur.fetchall()
-        
-        if row:
-            data["tid"] = row["tid"]  # Corrected: use row["tid"] instead of row["id"]
-            return data
-        else:
-            # Handle error or return None
-            return None
-    else:
-        # Handle error or return None
-        return None
+    cur = execute("""CALL check_id(%s)""", (id,))
+    exist = cur.fetchone()
+    print(exist["message"])
+    if exist["message"] == 1:
+        cur = execute("""CALL update_post(%s, %s, %s)""", (id, data["title"], data["content"]))
+        row = cur.fetchone()
+        data["tid"] = row["tid"]
+        return data
+    return {"error": "id doesn't match to any post"}
 
 # DELETE
 def delete(id):
-    cur = execute("""CALL delete_post(%s)""", (id,))
-    row = cur.fetchone()
-    if row is None:
-        return True
-    return False
+    cur = execute("""CALL check_id(%s)""", (id,))
+    exist = cur.fetchone()
+    print(exist["message"])
+    if exist["message"] == 1:
+        cur = execute("""CALL delete_post(%s)""", (id,))
+        row = cur.fetchone()
+        return row
+    return {"error":"id doesn't match to any post"}
+    
+    
+    
+    
 
 
