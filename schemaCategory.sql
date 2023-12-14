@@ -86,3 +86,59 @@ BEGIN
   WHERE id = p_id;
 END$$$
 DELIMITER ;
+
+
+
+
+
+"""
+CREATE TABLE `dbsample`.`post` (
+  `tid` INT NOT NULL,
+  `title` VARCHAR(100) NULL,
+  `content` VARCHAR(200) NULL,
+  PRIMARY KEY (`tid`));
+
+ VIEW `post_view` AS
+    SELECT 
+        `post`.`tid` AS `tid`,
+        `post`.`title` AS `title`,
+        `post`.`content` AS `content`
+    FROM
+        `post`
+
+CREATE PROCEDURE `save_post` (
+    IN p_tid INT, 
+    IN p_title VARCHAR(100), 
+    IN p_content VARCHAR(200)
+)
+BEGIN
+    INSERT INTO dbsample.post (tid, title, content)
+    VALUES (p_tid, p_title, p_content);
+    
+    SELECT * FROM post WHERE tid = LAST_INSERT_ID();   
+END
+
+CREATE PROCEDURE `update_post` (
+    IN p_tid INT,
+    IN p_title VARCHAR(100),
+    IN p_content VARCHAR(200)
+)
+BEGIN
+    UPDATE dbsample.post
+    SET title = p_title, content = p_content
+    WHERE tid = p_tid;
+
+    -- Optionally, you can return the updated data
+    SELECT * FROM dbsample.post WHERE tid = p_tid;
+END
+
+CREATE PROCEDURE `delete_post` (
+IN p_tid INT
+)
+BEGIN
+ DELETE FROM post
+    WHERE tid = p_tid;
+    SELECT tid FROM post WHERE tid = p_id;
+END
+
+"""
