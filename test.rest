@@ -34,12 +34,10 @@ Content-Type: application/json
 
 
 ### Delete an item
-DELETE {{host}}/catusers/5
+DELETE {{host}}/catusers/6
 Content-Type: application/json
 
 ## NABUA
-
-
 ### Create Post
 POST {{host}}/post
 Content-Type: application/json
