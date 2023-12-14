@@ -1,0 +1,38 @@
+@host = http://127.0.0.1:5000
+
+
+### Create a new item
+POST {{host}}/catusers
+Content-Type: application/json
+
+{
+  "category": "General",
+  "hashtag": "home decor",
+  "date": "12/14/2023"
+}
+
+
+### Read the list
+GET {{host}}/catusers
+Content-Type: application/json
+
+
+### Read a single item by id
+GET {{host}}/catusers/4
+Content-Type: application/json
+
+
+### Update an item
+PUT {{host}}/catusers/4
+Content-Type: application/json
+
+{
+  "category": "Education",
+  "hashtag": "algebra",
+  "date": "12/14/2023"
+}
+
+
+### Delete an item
+DELETE {{host}}/catusers/5
+Content-Type: application/json
