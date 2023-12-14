@@ -73,9 +73,71 @@ def delete(id):
         row = cur.fetchone()
         return row
     return {"error":"id doesn't match to any post"}
-    
-    
-    
+
+def create_reply(data):
+    if 'post_id' in data and 'user_id' in data: 
+        data['post_date'] = datetime.now().strftime("%m/%d/%Y")
+        cur = execute("""CALL save_reply(%s, %s, %s, %s, %s, %s)""", (
+            data['post_id'], data['user_id'], data['content'],
+            data['post_date'], data['likes'], data['dislikes']
+        ))
+        row = cur.fetchall()
+        
+        if row:
+            data["reply_id"] = row["reply_id"]
+            return data
+        else:
+            return None
+    else:
+        return None
+
+def get_reply_by_id(reply_id):
+    rv = fetchone("""SELECT * FROM reply_view WHERE reply_id = %s""", (reply_id,))
+    return rv
+
+def update_reply(reply_id, data):
+    if 'reply_id' in data: 
+        cur = execute("""CALL update_reply(%s, %s, %s, %s, %s, %s)""", (
+            reply_id, data['post_id'], data['user_id'], data['content'],
+            data['post_date'], data['likes'], data['dislikes']
+        ))
+        row = cur.fetchall()
+        
+        if row:
+            data["reply_id"] = row["reply_id"]
+            return data
+        else:
+            return None
+    else:
+        return None
+
+def delete_reply(reply_id):
+    cur = execute("""CALL delete_reply(%s)""", (reply_id,))
+    row = cur.fetchone()
+    if row is None:
+        return True
+    return False
+
+@app.route("/post/<post>", methods=["GET", "PUT", "DELETE"])
+def post_by_post(post):
+    if request.method == "PUT":
+        data = request.get_json()
+        if 'reply_id' in data:
+            result = update_reply(data['reply_id'], data)
+        else:
+            result = update_post(post, data)
+    elif request.method == "DELETE":
+        data = request.get_json()
+        if 'reply_id' in data:
+            result = delete_reply(data['reply_id'])
+        else:
+            result = delete_post(post)
+    else:
+        if post.isdigit():
+            result = get_pos_by_id(post)
+        else:
+            result = get_reply_by_id(post)
+    return jsonify(result)    
     
 
 
