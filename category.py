@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, jsonify
-from categoryCategory import get_all_catusers, get_catuser_by_id, create_catuser, update_catuser, delete_catuser
+from categoryCategory import get_all_catusers, get_catuser_by_id, create_catuser, update_catuser, delete_catuser, get_post, get_post_by_id,create,update,delete
 from flask_mysqldb import MySQL
 from dbCategory import set_database
 from dotenv import load_dotenv
@@ -55,6 +55,7 @@ def catusers_by_id(id):
   return jsonify(result)
 
 ##NABUA
+
 #to create and read the post
 @app.route("/post", methods=["GET", "POST"])
 def post():
@@ -78,7 +79,7 @@ def post_by_post(post):
         result = delete(post)
 
     else:
-        result = get_pos_by_id(post)
+        result = get_post_by_id(post)
     return jsonify(result)
         
 
