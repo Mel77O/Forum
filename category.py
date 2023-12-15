@@ -83,6 +83,13 @@ def post_by_post(post):
     return jsonify(result)
         
 
-  
-
-
+@app.route("/post/<post_id>/replies", methods=["GET", "POST"])
+def post_replies(post_id):
+    if request.method == "POST":
+        data = request.get_json()
+        data["post_id"] = post_id
+        result = create_reply(data)
+        return jsonify(result)
+    else:
+        result = get_replies_for_post(post_id)
+        return jsonify(result) if result else jsonify({"message": "No replies for this post"})
