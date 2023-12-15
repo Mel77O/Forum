@@ -168,12 +168,43 @@ CREATE TABLE `post_view` (
 
 -- --------------------------------------------------------
 
+-- CREATE TABLE replies
+CREATE TABLE `replies` (
+  `reply_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `post_id` INT UNSIGNED NOT NULL,
+  `user_id` INT UNSIGNED NOT NULL,
+  `content` VARCHAR(1000) NOT NULL,
+  `reply_date` VARCHAR(100) NOT NULL,
+  `likes` INT DEFAULT 0,
+  `dislikes` INT DEFAULT 0,
+  PRIMARY KEY (`reply_id`),
+  FOREIGN KEY (`post_id`) REFERENCES `post`(`tid`),
+  FOREIGN KEY (`user_id`) REFERENCES `catusers`(`id`)
+) ENGINE=InnoDB;
+
+DELIMITER $$$
+
+-- Procedure to save a new reply
+CREATE PROCEDURE save_reply(
+  IN p_post_id INT,
+  IN p_user_id INT,
+  IN p_content VARCHAR(1000),
+  IN p_reply_date VARCHAR(100)
+)
+BEGIN
+  -- Insert into replies table
+  INSERT INTO replies (post_id, user_id, content, reply_date)
+    VALUES (p_post_id, p_user_id, p_content, p_reply_date);
+END$$$
+DELIMITER ;
+
 --
 -- Structure for view `post_view`
 --
+
 DROP TABLE IF EXISTS `post_view`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `post_view`  AS SELECT `post`.`tid` AS `tid`, `post`.`title` AS `title`, `post`.`content` AS `content` FROM `post` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `post_view`  AS SELECT `post`.`tid` AS `tid`, `post`.`title` AS `title`, `post`.`content` AS `content` FROM `post`;
 
 --
 -- Indexes for dumped tables
