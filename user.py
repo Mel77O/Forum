@@ -34,47 +34,15 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         pwd = request.form['password']
-        name = request.form['name']
         email = request.form['email']
         cur = mysql.connection.cursor()
-        cur.execute(f"insert into userstbl (name, username, email, password) values ('{name}', '{username}', '{email}', '{pwd}')")
+        cur.execute(f"insert into userstbl (username, email, password) values ('{username}', '{email}', '{pwd}')")
         mysql.connection.commit()
         cur.close()
 
         return redirect(url_for('login'))
         
     return render_template('register.html')
-
-@app.route("/profile", methods=["GET", "POST"])
-def profile():
-    if 'username' not in session:
-        return redirect(url_for('login'))
-
-    username = session['username']
-
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute(f"SELECT name, email FROM userstbl WHERE username='{username}'")
-        user_data = cur.fetchone()
-        cur.close()
-
-        if request.method == 'POST':
-            new_name = request.form['name']
-            new_email = request.form['email']
-
-            cur = mysql.connection.cursor()
-            cur.execute(f"UPDATE userstbl SET name='{new_name}', email='{new_email}' WHERE username='{username}'")
-            mysql.connection.commit()
-            cur.close()
-
-            # Update the session data
-            session['name'] = new_name
-
-    except Exception as e:
-        # Log the exception
-        print(f"An error occurred: {e}")
-
-    return render_template('profile.html', user_data=user_data)
 
 
 
