@@ -45,6 +45,38 @@ def register():
         
     return render_template('register.html')
 
+@app.route("/profile", methods=["GET", "POST"])
+def profile():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    username = session['username']
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(f"SELECT name, email FROM userstbl WHERE username='{username}'")
+        user_data = cur.fetchone()
+        cur.close()
+
+        if request.method == 'POST':
+            new_name = request.form['name']
+            new_email = request.form['email']
+
+            cur = mysql.connection.cursor()
+            cur.execute(f"UPDATE userstbl SET name='{new_name}', email='{new_email}' WHERE username='{username}'")
+            mysql.connection.commit()
+            cur.close()
+
+            # Update the session data
+            session['name'] = new_name
+
+    except Exception as e:
+        # Log the exception
+        print(f"An error occurred: {e}")
+
+    return render_template('profile.html', user_data=user_data)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
