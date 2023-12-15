@@ -88,8 +88,7 @@ END$$$
 DELIMITER ;
 
 
-"""
-"""
+---NABUA
 
 
 DELIMITER $$
@@ -168,35 +167,6 @@ CREATE TABLE `post_view` (
 
 -- --------------------------------------------------------
 
--- CREATE TABLE replies
-CREATE TABLE `replies` (
-  `reply_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `post_id` INT UNSIGNED NOT NULL,
-  `user_id` INT UNSIGNED NOT NULL,
-  `content` VARCHAR(1000) NOT NULL,
-  `reply_date` VARCHAR(100) NOT NULL,
-  `likes` INT DEFAULT 0,
-  `dislikes` INT DEFAULT 0,
-  PRIMARY KEY (`reply_id`),
-  FOREIGN KEY (`post_id`) REFERENCES `post`(`tid`),
-  FOREIGN KEY (`user_id`) REFERENCES `catusers`(`id`)
-) ENGINE=InnoDB;
-
-DELIMITER $$$
-
--- Procedure to save a new reply
-CREATE PROCEDURE save_reply(
-  IN p_post_id INT,
-  IN p_user_id INT,
-  IN p_content VARCHAR(1000),
-  IN p_reply_date VARCHAR(100)
-)
-BEGIN
-  -- Insert into replies table
-  INSERT INTO replies (post_id, user_id, content, reply_date)
-    VALUES (p_post_id, p_user_id, p_content, p_reply_date);
-END$$$
-DELIMITER ;
 
 --
 -- Structure for view `post_view`
@@ -232,6 +202,52 @@ COMMIT;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+
+---reply
+
+CREATE TABLE `reply` (
+  `ReplyID` int NOT NULL AUTO_INCREMENT,
+  `Content` text NOT NULL,
+  `OriginalMessageID` int DEFAULT NULL,
+  `ReplyTimestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ReplyID`),
+  KEY `OriginalMessageID` (`OriginalMessageID`),
+  CONSTRAINT `reply_ibfk_1` FOREIGN KEY (`OriginalMessageID`) REFERENCES `post` (`tid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+
+CREATE VIEW `reply_view` AS
+SELECT 
+    `reply`.`ReplyID` AS `ReplyID`,
+    `reply`.`Content` AS `Content`,
+    `reply`.`OriginalMessageID` AS `OriginalMessageID`,
+    `reply`.`ReplyTimestamp` AS `ReplyTimestamp`,
+    `post`.`title` AS `OriginalMessageTitle`
+FROM
+    `reply`
+JOIN
+    `post` ON (`reply`.`OriginalMessageID` = `post`.`tid`);
+
+DELIMITER $$
+
+
+CREATE PROCEDURE `add_reply_to_post` (
+    IN `p_Content` VARCHAR(200),
+    IN `p_OriginalMessageID` INT
+)
+BEGIN
+    -- Check if the post with the given ID exists
+    DECLARE postExists INT DEFAULT 0;
+    SELECT COUNT(*) INTO postExists FROM post WHERE tid = p_OriginalMessageID;
+
+    IF postExists = 1 THEN
+        -- If the post exists, add the reply
+        CALL add_reply(p_Content, p_OriginalMessageID);
+    ELSE
+        -- If the post doesn't exist, you may want to handle this case accordingly
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Original message does not exist';
+    END IF;
+END$$
+
+DELIMITER ;
