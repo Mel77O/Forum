@@ -67,3 +67,29 @@ Content-Type: application/json
 ### Delete Post
 DELETE {{host}}/post/1
 Content-Type: application/json
+
+### Create User
+POST {{host}}/users
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "email": "john@doe.com",
+    "password": "123456"
+}
+
+### Read All Users
+GET {{host}}/users
+Content-Type: application/json
+
+### Read User by ID
+GET {{host}}/users/1
+Content-Type: application/json
+
+### Update User
+PUT {{host}}/users/1
+Content-Type: application/json
+
+### Delete User
+DELETE {{host}}/users/1
+Content-Type: application/json
