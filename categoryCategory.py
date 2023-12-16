@@ -30,7 +30,8 @@ def delete_catuser(id):
   return False
 
 ## NABUA
-# CREATE
+
+# CREATE post
 def create(data):
   cur = execute("""CALL save_post(%s, %s)""",
           (data["title"], data["content"]))
@@ -88,3 +89,12 @@ def create_reply(data):
 def get_replies_for_post(post_id):
     rv = fetchall("""SELECT * FROM replies WHERE post_id = %s""", (post_id,))
     return rv if rv else [] 
+
+### reply
+
+# CREATE REPLY FOR A POST
+def add_reply_to_post(post_id, data):
+    cur = execute("""CALL add_reply_to_post(%s, %s)""",
+                  (data["Content"], post_id))
+    return {"message": "Reply added successfully"}
+

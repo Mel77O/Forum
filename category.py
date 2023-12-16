@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, jsonify
-from categoryCategory import get_all_catusers, get_catuser_by_id, create_catuser, update_catuser, delete_catuser, get_post, get_post_by_id,create,update,delete
+from categoryCategory import get_all_catusers, get_catuser_by_id, create_catuser, update_catuser, delete_catuser, get_post, get_post_by_id,create,update,delete, create_reply,get_replies_for_post
 from flask_mysqldb import MySQL
 from dbCategory import set_database
 from dotenv import load_dotenv
@@ -83,7 +83,7 @@ def post_by_post(post):
     return jsonify(result)
         
 
- @app.route("/post/<post_id>/replies", methods=["GET", "POST"])
+@app.route("/post/<post_id>/replies", methods=["GET", "POST"])
 def post_replies(post_id):
     if request.method == "POST":
         data = request.get_json()
