@@ -75,26 +75,9 @@ def delete(id):
         return row
     return {"error":"id doesn't match to any post"}
 
-# CREATE REPLY
-def create_reply(data):
-    cur = execute("""CALL save_reply(%s, %s, %s, %s)""",
-                   (data["post_id"], data["user_id"], data["content"], data["reply_date"]))
-    row = cur.fetchone()
-    if row:
-        data["reply_id"] = row["reply_id"]
-        return data
-    else:
-        return {"error": "Failed to create reply"}
-
-def get_replies_for_post(post_id):
-    rv = fetchall("""SELECT * FROM replies WHERE post_id = %s""", (post_id,))
-    return rv if rv else [] 
-
-### reply
 
 # CREATE REPLY FOR A POST
 def add_reply_to_post(post_id, data):
     cur = execute("""CALL add_reply_to_post(%s, %s)""",
                   (data["Content"], post_id))
     return {"message": "Reply added successfully"}
-
